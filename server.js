@@ -10,7 +10,7 @@ const app = express();
 // ==============================
 //  FIREBASE CONNECT
 // ==============================
-const serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json", "utf8"));
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -168,4 +168,4 @@ app.get("/menu", async (req, res) => {
 // ==============================
 //  START SERVER
 // ==============================
-app.listen(3000, () => console.log("🚀 API running on port 3000"));
+module.exports = app;
