@@ -10,12 +10,25 @@ const app = express();
 // ==============================
 //  FIREBASE CONNECT
 // ==============================
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT;
+console.log("Variabel Lingkungan Ditemukan:", !!serviceAccountString); // Cek apakah string tidak kosong
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+try {
+    const serviceAccount = JSON.parse(serviceAccountString);
+    console.log("Parsing JSON Sukses. Project ID:", serviceAccount.project_id); // Harus menampilkan ID Proyek
+    
+    // Pastikan ini tetap ada untuk mencegah inisialisasi ganda di serverless
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+        });
+        console.log("✅ Admin SDK Berhasil Diinisialisasi.");
+    }
 
+} catch (e) {
+    console.error("❌ ERROR PARSING SERVICE ACCOUNT KEY:", e.message);
+    // Jika ini yang muncul di log Vercel, maka format Value Anda di Vercel salah!
+}
 const db = admin.firestore();
 
 // ==============================
@@ -169,3 +182,4 @@ app.get("/menu", async (req, res) => {
 //  START SERVER
 // ==============================
 module.exports = app;
+
